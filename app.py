@@ -1,21 +1,35 @@
 # from urllib.request import proxy_bypass_macosx_sysconf
 
-from flask import Flask,render_template,request #help yo service html file to the user
+from flask import Flask,render_template,request,redirect,url_for,flash#help yo service html file to the user
 import pygal
+import psycopg2
 from flask_sqlalchemy import SQLAlchemy
+from config.Config import Develpoment
 
 
     #module import flask file
 app = Flask(__name__)
-
+app.config.from_object(Develpoment)
+# app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:#0724246005@127.0.0.1:5432/sales_demo'
+# app.config['SECRET_KEY']='LearningPyT'
+# app.config['DEBUG']=True
 db = SQLAlchemy(app)
+
+from models.inventories import Inventories
+from models.sales import Sales
+@app.before_first_request
+def create_tables():
+    db.create_all()
 
 
 #instanciating
 # url#uri uniform resource identifor
 @app.route('/')#its a path need to be raped on
 def hello_world():
-    return render_template('index.html')
+    x = 'Mbugua'
+    records = Inventories.fetch_all_records()
+
+    return render_template('index.html',records=records, x=x)
 
 @app.route('/add_inventory', methods=['POST','GET'])
 def add_inventories():
@@ -26,13 +40,81 @@ def add_inventories():
         selling_price = request.form['SP']
         stock = request.form['stock']
 
-        print(name)
-        print(type)
-        print(buying_price)
-        print(selling_price)
-        print(stock)
+        # print(name)
+        # print(type)
+        # print(buying_price)
+        # print(selling_price)
+        # print(stock)
 
-        return "name"
+        record =Inventories( name=name, buying_price=buying_price, selling_price=selling_price, type=type, stock=stock)
+        record.add_records()
+        #return "name"
+    return redirect(url_for('hello_world'))
+
+@app.route('/test/<num1>/<num2>')
+def test(num1,num2):
+
+   print(int(num1)+int(num2))
+   return 'YES'
+
+
+@app.route('/salepro/<int:id>', methods=['POST','GET'])
+def makeSales(id):
+    #print(id)
+    record = Inventories.fetch_one_records(id)
+
+    if record:
+        if request.method == 'POST':
+            quantity = request.form['quantity']
+            newStock = record.stock - int(quantity)
+
+            record.stock = newStock
+            db.session.commit()
+            sales = Sales(inv_id=id, quantity=quantity)
+            sales.add_records()
+            flash('You successfully made a sale', 'success')
+            # print(quantity)
+            # print(newStock)
+
+    return redirect(url_for('hello_world'))
+
+@app.route('/viewsales/<int:id>')
+def viewSales(id):
+    product = Inventories.fetch_one_records(id)
+    # sales = product.sales
+    return render_template('sales.html', product=product)
+
+@app.route('/delete/<int:id>')
+def delete(id):
+    records = Inventories.fetch_one_records(id)
+    print(records.item_id)
+    print(records.name)
+    db.session.delete(records)
+    db.session.commit()
+    flash('You have successfully delete the inventory', 'danger')
+    return redirect(url_for('hello_world'))
+
+    return 'mojo'
+
+@app.route('/edit/<int:id>', methods=['POST','GET'])
+def edit(id):
+    record = Inventories.fetch_one_records(id)
+
+    if request.method =='POST':
+        record.name = request.form['name']
+        record.type = request.form['type']
+        record.buying_price = request.form['BP']
+        record.selling_price = request.form['SP']
+        record.stock = request.form['stock']
+
+        db.session.commit()
+
+        return redirect(url_for('hello_world'))
+    return  render_template('edit.html', record=record)
+
+
+
+
 
 
 

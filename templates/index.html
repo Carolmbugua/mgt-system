@@ -10,12 +10,16 @@ body {background-color: lightgreen;}
 h1 {color: white; text-align: center;}
 p {font-family: verdana; font-size: 20px;}
 </style>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
 
 
 </head>
 
 <body>
 <div class="container">
+    {{ x }}
     <div class="row">
         <div class="col-4"></div>
         <div class="col-4">
@@ -77,9 +81,9 @@ p {font-family: verdana; font-size: 20px;}
 </form>
 
      </div>
-      <div class="modal-footer">
+     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-
+        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
@@ -102,10 +106,12 @@ p {font-family: verdana; font-size: 20px;}
       <th scope="col">Buying Price</th>
       <th scope="col">Selling Price</th>
       <th scope="col">Stock</th>
+      <th scope="col">Make Sales</th>
+      <th scope="col">View Sales</th>
       <th scope="col">Edit</th>
-      <th scope="col">View Sale</th>
       <th scope="col">Delete</th>
     </tr>
+
   </thead>
   <tbody>
     <tr>
@@ -119,26 +125,64 @@ p {font-family: verdana; font-size: 20px;}
       <td></td>
       <td></td>
     </tr>
-    <tr>
-      <th scope="row">2</th>
-      <td>Apple</td>
-      <td>Product</td>
-      <td>500</td>
-      <td>1000</td>
-      <td>2200</td>
-      <td></td>
-      <td></td>
+
+
+
+  {% for each in records %}
+   <tr>
+      <th scope="row">{{ each.item_id }}</th>
+      <td>{{ each.name }}</td>
+      <td>{{ each.type }}</td>
+      <td>{{each.buying_price  }}</td>
+      <td>{{each.selling_price }}</td>
+      <td>{{ each.stock }}</td>
+      <td>
+      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#salesModal">
+  Make Sale
+</button>
+
+
+<!-- Modal -->
+<div class="modal fade" id="salesModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="salesModal">Make Sales</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+
+<form action="/salepro/{{ each.item_id }}", method="POST">
+  <div class="form-group">
+    <label for="exampleFormControlInput1">Quantity</label>
+    <input type="integer" name="quantity" class="form-control" id="salesModal" placeholder="quantity">
+
+  </div>
+
+
+<div class="Modal-footer">
+
+        <button type="submit" class="btn btn-primary">Sale</button>
+      </div>
+
+</form>
+
+
+      <td>
+       <a href="viewsales/{{ each.item_id }}"> <button type="button" class="btn btn-secondary" data-dismiss="modal">View Sales</button></a></td>
+       <td>
+           <a href="{{ url_for('edit', id = each.item_id )}}"> <button type="button" class="btn btn-secondary" data-dismiss="modal">Edit</button></a>
+       </td>
+
+{#      <td><a href="/delete/{{ each.id }}"><button type="button" class="btn btn-danger" data-dismiss="modal">Delete</button></a></td>#}
+      <td><a href="{{ url_for('delete', id = each.item_id )}}"><button type="button" class="btn btn-danger" data-dismiss="modal">Delete</button></a> </td>
     </tr>
-    <tr>
-      <th scope="row">3</th>
-      <td>Massage</td>
-      <td>service</td>
-      <td>2000</td>
-      <td>5000</td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
+
+  {% endfor %}
+
   </tbody>
 </table>
     </div>
