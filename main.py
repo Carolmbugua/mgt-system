@@ -4,12 +4,13 @@ from flask import Flask,render_template,request,redirect,url_for,flash#help yo s
 import pygal
 import psycopg2
 from flask_sqlalchemy import SQLAlchemy
-from config.Config import Develpoment
+# from config.Config import Develpoment,Production
+from  config.Config import Develpoment,Production
 
 
     #module import flask file
 app = Flask(__name__)
-app.config.from_object(Develpoment)
+app.config.from_object(Production)
 # app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:#0724246005@127.0.0.1:5432/sales_demo'
 # app.config['SECRET_KEY']='LearningPyT'
 # app.config['DEBUG']=True
