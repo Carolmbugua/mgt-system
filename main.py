@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 # from config.Config import Develpoment,Production
 from  config.Config import Develpoment,Production
 
+# print("Hello world")
 
     #module import flask file
 app = Flask(__name__)
