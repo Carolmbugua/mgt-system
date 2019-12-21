@@ -4,10 +4,10 @@ from flask import Flask,render_template,request,redirect,url_for,flash#help yo s
 import pygal
 import psycopg2
 from flask_sqlalchemy import SQLAlchemy
-
+# from config.Config import Develpoment,Production
 from  config.Config import Develpoment,Production
 
-# print("Hello world")
+
 
     #module import flask file
 app = Flask(__name__)
