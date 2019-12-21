@@ -5,7 +5,7 @@ import pygal
 import psycopg2
 from flask_sqlalchemy import SQLAlchemy
 # from config.Config import Develpoment,Production
-from  config.Config import Develpoment,Production
+from  config.config import Develpoment,Production
 
 
 
@@ -55,8 +55,6 @@ def add_inventories():
 
 @app.route('/test/<num1>/<num2>')
 def test(num1,num2):
-
-   print(int(num1)+int(num2))
    return 'YES'
 
 
